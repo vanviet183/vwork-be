@@ -23,12 +23,12 @@ export class AuthService {
     });
 
     const payload = { id: newUser.id };
-    const { access_token, refresh_token } = await this.generateToken(payload);
+    const { accessToken, refreshToken } = await this.generateToken(payload);
 
     const response = {
-      id: newUser.id,
-      access_token: access_token,
-      refresh_token: refresh_token,
+      userId: newUser.id,
+      accessToken,
+      refreshToken,
     };
     return response;
   }
@@ -49,24 +49,24 @@ export class AuthService {
     }
     //generate access token and refresh token
     const payload = { id: user.id };
-    const { access_token, refresh_token } = await this.generateToken(payload);
+    const { accessToken, refreshToken } = await this.generateToken(payload);
 
     const response = {
-      id: user.id,
-      access_token: access_token,
-      refresh_token: refresh_token,
+      userId: user.id,
+      accessToken,
+      refreshToken,
     };
     return response;
   }
 
   private async generateToken(payload: { id: number }) {
-    const access_token = await this.jwtService.signAsync(payload);
-    const refresh_token = await this.jwtService.signAsync(payload, {
+    const accessToken = await this.jwtService.signAsync(payload);
+    const refreshToken = await this.jwtService.signAsync(payload, {
       secret: 'vwork',
       expiresIn: '7d',
     });
 
-    return { access_token, refresh_token };
+    return { accessToken, refreshToken };
   }
 
   private async hashPassword(password: string): Promise<string> {
