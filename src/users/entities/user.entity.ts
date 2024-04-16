@@ -4,11 +4,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   ManyToOne,
-  OneToMany,
+
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserProject } from './user-project.entity';
+
+import { Task } from 'src/tasks/entities/task.entity';
+import { Meeting } from 'src/meetings/entities/meeting.entity';
 
 @Entity()
 export class User {
@@ -33,8 +36,23 @@ export class User {
   @ManyToOne(() => Organization, (organization) => organization.users)
   organization: Organization;
 
-  @OneToMany(() => UserProject, (userProject) => userProject.user)
-  userProjects: UserProject[];
+  @ManyToMany(() => Task, (task) => task.users, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+  })
+  tasks: Task[];
+
+  @ManyToMany(() => Document, (document) => document.users, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+  })
+  documents: Document[];
+
+  @ManyToMany(() => Meeting, (meeting) => meeting.users, {
+    onDelete: 'NO ACTION',
+    onUpdate: 'NO ACTION',
+  })
+  meetings: Meeting[];
 
   @CreateDateColumn()
   createdAt: Date;

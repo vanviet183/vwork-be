@@ -1,5 +1,7 @@
+import { Meeting } from 'src/meetings/entities/meeting.entity';
+import { Document } from 'src/documents/entities/document.entity';
 import { Organization } from 'src/organizations/entities/organization.entity';
-import { UserProject } from 'src/users/entities/user-project.entity';
+import { Task } from 'src/tasks/entities/task.entity';
 
 import {
   Column,
@@ -33,8 +35,14 @@ export class Project {
   @ManyToOne(() => Organization, (organization) => organization.projects)
   organization: Organization;
 
-  @OneToMany(() => UserProject, (userProject) => userProject.project)
-  userProjects: UserProject[];
+  @OneToMany(() => Task, (task) => task.project)
+  tasks: Task[];
+
+  @OneToMany(() => Document, (document) => document.project)
+  documents: Document[];
+
+  @OneToMany(() => Meeting, (meeting) => meeting.project)
+  meetings: Meeting[];
 
   @CreateDateColumn()
   createdAt: Date;

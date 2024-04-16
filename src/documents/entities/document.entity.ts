@@ -1,10 +1,12 @@
-import { UserProject } from 'src/users/entities/user-project.entity';
+import { Project } from 'src/projects/entities/project.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -19,14 +21,17 @@ export class Document {
   @Column()
   filePath: number;
 
-  @ManyToMany(() => UserProject, (userProject) => userProject.documents, {
+  @ManyToMany(() => User, (user) => user.documents, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinTable({
-    name: 'user_project_document',
+    name: 'user_document',
   })
-  userProjects?: UserProject[];
+  users?: User[];
+
+  @ManyToOne(() => Project, (project) => project.documents)
+  project: Project;
 
   @CreateDateColumn()
   createdAt: Date;

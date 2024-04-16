@@ -1,10 +1,12 @@
-import { UserProject } from 'src/users/entities/user-project.entity';
+import { Project } from 'src/projects/entities/project.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -25,14 +27,17 @@ export class Meeting {
   @Column()
   address: string;
 
-  @ManyToMany(() => UserProject, (userProject) => userProject.meetings, {
+  @ManyToMany(() => User, (user) => user.meetings, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
   @JoinTable({
-    name: 'user_project_meeting',
+    name: 'user_meeting',
   })
-  userProjects?: UserProject[];
+  users?: User[];
+
+  @ManyToOne(() => Project, (project) => project.meetings)
+  project: Project;
 
   @CreateDateColumn()
   createdAt: Date;
