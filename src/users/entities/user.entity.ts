@@ -1,12 +1,18 @@
+import { Organization } from 'src/organizations/entities/organization.entity';
+
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { UserProject } from './user-project.entity';
+
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
   @Column()
@@ -15,7 +21,7 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -23,6 +29,12 @@ export class User {
 
   @Column({ nullable: true, default: null })
   avatar: string;
+
+  @ManyToOne(() => Organization, (organization) => organization.users)
+  organization: Organization;
+
+  @OneToMany(() => UserProject, (userProject) => userProject.user)
+  userProjects: UserProject[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -5,8 +5,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { DocumentsModule } from './documents/documents.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MeetingsModule } from './meetings/meetings.module';
-import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { AuthModule } from './auth/auth.module';
       username: 'root',
       password: 'Viet152418',
       database: 'vwork_be',
-      entities: [User],
+      entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
     UsersModule,
@@ -26,6 +26,7 @@ import { AuthModule } from './auth/auth.module';
     DocumentsModule,
     MeetingsModule,
     AuthModule,
+    OrganizationsModule,
   ],
 })
 export class AppModule {}

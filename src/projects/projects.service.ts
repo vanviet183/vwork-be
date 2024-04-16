@@ -1,15 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Organization } from 'src/organizations/entities/organization.entity';
+import { Repository } from 'typeorm';
+import { Project } from './entities/project.entity';
 
 @Injectable()
 export class ProjectsService {
-  create(createProjectDto: CreateProjectDto) {
-    return 'This action adds a new project';
+  constructor(
+    @InjectRepository(Organization)
+    private organizationRepository: Repository<Organization>,
+    @InjectRepository(Project)
+    private projectRepository: Repository<Project>,
+  ) {}
+
+  async create(createProjectDto: CreateProjectDto) {
+    const organiztion = await this.organizationRepository.findOneBy({
+      id: createProjectDto.organizationId,
+    });
+    if (!organiztion) {
+      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+    }
+    return await this.projectRepository.save(createProjectDto);
   }
 
-  findAll() {
-    return `This action returns all projects`;
+  async findAll() {
+    return await this.projectRepository.find();
   }
 
   findOne(id: number) {
