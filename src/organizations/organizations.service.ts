@@ -17,10 +17,23 @@ export class OrganizationsService {
   ) {}
 
   async create(createOrganizationDto: CreateOrganizationDto) {
+    const user = await this.userRepository.findOneBy({
+      id: createOrganizationDto.userId,
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
     const newOrganiztion = await this.organizationRepository.create({
       ...createOrganizationDto,
     });
-
+    if (!newOrganiztion.users) {
+      newOrganiztion.users = [];
+    }
+    user.role = createOrganizationDto.role;
+    newOrganiztion.users.push(user);
+    await this.userRepository.save(user);
     return await this.organizationRepository.save(newOrganiztion);
   }
 
@@ -37,8 +50,25 @@ export class OrganizationsService {
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
+    if (!organiztion.users) {
+      organiztion.users = [];
+    }
     organiztion.users.push(user);
     return await this.organizationRepository.save(organiztion);
+  }
+
+  async getAllUserInOrganization(id: number) {
+    const organization = await this.organizationRepository
+      .createQueryBuilder('organization')
+      .leftJoinAndSelect('organization.users', 'user')
+      .where('organization.id = :id', { id })
+      .getOne();
+
+    if (!organization) {
+      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+    }
+
+    return { listUser: organization.users };
   }
 
   async findAll() {

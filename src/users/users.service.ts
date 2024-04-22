@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,7 +22,7 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
+  getUserInfo(id: number) {
     return this.userRepository.findOne({ where: { id } });
   }
 

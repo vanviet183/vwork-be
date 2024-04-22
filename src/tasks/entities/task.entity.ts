@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -15,21 +16,33 @@ export class Task {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column()
-  name: string;
+  @Column({ nullable: true })
+  parentTaskId: number;
+
+  @ManyToOne(() => Task, (task) => task.id)
+  @JoinColumn({ name: 'parentTaskId' })
+  parentTask?: Task;
 
   @Column()
-  prioritize: number;
+  taskName: string;
 
   @Column()
-  status: number;
+  prioritize: boolean;
 
   @Column()
-  deadline: string;
+  status: string;
+
+  @Column()
+  startDate: string;
+
+  @Column({ nullable: true })
+  finishDay: string;
+
+  @Column()
+  endDate: string;
 
   @ManyToMany(() => User, (user) => user.tasks, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    eager: true,
   })
   @JoinTable({
     name: 'user_task',

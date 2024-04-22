@@ -20,23 +20,36 @@ export class ProjectsController {
     return this.projectsService.create(createProjectDto);
   }
 
-  @Get()
+  @Get('')
   findAll() {
     return this.projectsService.findAll();
   }
 
+  @Get('organization/:id')
+  findAllByOrganization(@Param('id') id: number) {
+    return this.projectsService.findAllByOrganization(id);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.projectsService.findOne(+id);
+  getProjectInfo(@Param('id') id: number) {
+    return this.projectsService.getProjectInfo(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
+  acceptProject(
+    @Param('id') id: number,
+    @Body() updateProjectDto: UpdateProjectDto,
+  ) {
+    return this.projectsService.update(+id, updateProjectDto);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: number, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectsService.update(+id, updateProjectDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.projectsService.remove(+id);
   }
 }

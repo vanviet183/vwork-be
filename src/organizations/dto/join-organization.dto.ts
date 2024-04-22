@@ -1,4 +1,4 @@
 export class JoinOrganizationDto {
-  organizationId: number;
   userId: number;
+  organizationId: number;
 }

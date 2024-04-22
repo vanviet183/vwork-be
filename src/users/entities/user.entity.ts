@@ -1,4 +1,5 @@
 import { Organization } from 'src/organizations/entities/organization.entity';
+import { Document } from 'src/documents/entities/document.entity';
 
 import {
   Column,
@@ -6,7 +7,6 @@ import {
   Entity,
   ManyToMany,
   ManyToOne,
-
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -33,7 +33,12 @@ export class User {
   @Column({ nullable: true, default: null })
   avatar: string;
 
-  @ManyToOne(() => Organization, (organization) => organization.users)
+  @Column({ nullable: true })
+  role: string;
+
+  @ManyToOne(() => Organization, (organization) => organization.users, {
+    eager: true,
+  })
   organization: Organization;
 
   @ManyToMany(() => Task, (task) => task.users, {

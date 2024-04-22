@@ -1,7 +1,7 @@
 export class CreateOrganizationDto {
+  userId: number;
   organizationName: string;
   email: string;
   phone: string;
-  amountEmployee: number;
   role: string;
 }

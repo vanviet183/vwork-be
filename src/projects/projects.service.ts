@@ -19,18 +19,44 @@ export class ProjectsService {
     const organiztion = await this.organizationRepository.findOneBy({
       id: createProjectDto.organizationId,
     });
+
     if (!organiztion) {
       throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
     }
-    return await this.projectRepository.save(createProjectDto);
+
+    const newProject = await this.projectRepository.create(createProjectDto);
+
+    return await this.projectRepository.save({
+      ...newProject,
+      status: 'Doing',
+      percent: 0,
+      prioritize: false,
+    });
   }
 
   async findAll() {
     return await this.projectRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
+  async findAllByOrganization(id: number) {
+    const organiztion = await this.organizationRepository.findOneBy({
+      id,
+    });
+    if (!organiztion) {
+      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+    }
+    const listProject = await this.projectRepository.find({
+      relations: ['organization'],
+    });
+    return { listProject };
+  }
+
+  async getProjectInfo(id: number) {
+    const project = await this.projectRepository.findOneBy({ id });
+    if (!project) {
+      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+    }
+    return project;
   }
 
   update(id: number, updateProjectDto: UpdateProjectDto) {

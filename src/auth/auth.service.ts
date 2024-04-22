@@ -34,11 +34,11 @@ export class AuthService {
   }
 
   async login(loginUserDto: LoginUserDto) {
-    const user = await this.userRepository.findOne({
-      where: { email: loginUserDto.email },
+    const user = await this.userRepository.findOneBy({
+      email: loginUserDto.email,
     });
     if (!user) {
-      throw new HttpException('Email is not exist', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('User is not exist', HttpStatus.UNAUTHORIZED);
     }
     const checkPass = bcrypt.compareSync(loginUserDto.password, user.password);
     if (!checkPass) {
@@ -55,6 +55,7 @@ export class AuthService {
       userId: user.id,
       accessToken,
       refreshToken,
+      organization: user.organization,
     };
     return response;
   }

@@ -26,13 +26,18 @@ export class OrganizationsController {
     return this.organizationsService.join(joinOrganizationDto);
   }
 
+  @Get(':id/users')
+  getAllUserInOrganization(@Param('id') id: number) {
+    return this.organizationsService.getAllUserInOrganization(+id);
+  }
+
   @Get()
   findAll() {
     return this.organizationsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.organizationsService.findOne(+id);
   }
 

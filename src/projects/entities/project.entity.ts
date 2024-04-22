@@ -18,10 +18,16 @@ export class Project {
   id: number;
 
   @Column()
-  name: string;
+  projectName: string;
 
   @Column()
-  status: number;
+  description: string;
+
+  @Column()
+  status: string;
+
+  @Column()
+  percent: number;
 
   @Column()
   startDate: string;
@@ -30,7 +36,7 @@ export class Project {
   endDate: string;
 
   @Column()
-  prioritize: number;
+  prioritize: boolean;
 
   @ManyToOne(() => Organization, (organization) => organization.projects)
   organization: Organization;

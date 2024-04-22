@@ -5,16 +5,12 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 @Entity()
 export class Organization {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
-
-  @OneToOne(() => User)
-  author: User;
 
   @Column()
   organizationName: string;
@@ -25,16 +21,7 @@ export class Organization {
   @Column()
   phone: string;
 
-  @Column()
-  amountEmployee: number;
-
-  @Column()
-  role: string;
-
-  @OneToMany(() => User, (user) => user.organization, {
-    cascade: true,
-    eager: true,
-  })
+  @OneToMany(() => User, (user) => user.organization)
   users?: User[];
 
   @OneToMany(() => Project, (project) => project.organization)
