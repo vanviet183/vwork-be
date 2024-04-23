@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
-import { TasksModule } from './tasks/tasks.module';
-import { ProjectsModule } from './projects/projects.module';
-import { DocumentsModule } from './documents/documents.module';
+import { UserModule } from './user/users.module';
+import { TaskModule } from './task/tasks.module';
+import { ProjectModule } from './project/projects.module';
+import { DocumentModule } from './document/documents.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MeetingsModule } from './meetings/meetings.module';
+import { MeetingModule } from './meeting/meetings.module';
 import { AuthModule } from './auth/auth.module';
-import { OrganizationsModule } from './organizations/organizations.module';
+import { OrganizationModule } from './organization/organizations.module';
+import { TaskRequireModule } from './task-require/task-require.module';
+import { GroupModule } from './group/group.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -20,13 +23,16 @@ import { OrganizationsModule } from './organizations/organizations.module';
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    UsersModule,
-    TasksModule,
-    ProjectsModule,
-    DocumentsModule,
-    MeetingsModule,
+    UserModule,
+    TaskModule,
+    ProjectModule,
+    DocumentModule,
+    MeetingModule,
     AuthModule,
-    OrganizationsModule,
+    OrganizationModule,
+    TaskRequireModule,
+    GroupModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}
