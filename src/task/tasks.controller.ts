@@ -30,6 +30,16 @@ export class TaskController {
     return this.taskService.getAllTaskInProject(id);
   }
 
+  @Get(':id/task-requires')
+  getAllTaskRequireInTask(@Param('id') id: number) {
+    return this.taskService.getAllTaskRequireInTask(+id);
+  }
+
+  @Get(':id/documents')
+  getAllDocumentInTask(@Param('id') id: number) {
+    return this.taskService.getAllDocumentInTask(+id);
+  }
+
   @Get(':id')
   getTaskInfo(@Param('id') id: string) {
     return this.taskService.getTaskInfo(+id);

@@ -15,7 +15,7 @@ import { UpdateTaskRequireDto } from './dto/update-task-require.dto';
 export class TaskRequireController {
   constructor(private readonly taskRequireService: TaskRequireService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createTaskRequireDto: CreateTaskRequireDto) {
     return this.taskRequireService.create(createTaskRequireDto);
   }

@@ -22,8 +22,8 @@ export class Task {
   @Column()
   taskName: string;
 
-  @Column()
-  authorTask: number;
+  @Column({ nullable: true })
+  userResponsible: number;
 
   @Column()
   prioritize: string;

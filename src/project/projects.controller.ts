@@ -25,14 +25,14 @@ export class ProjectController {
     return this.projectService.findAll();
   }
 
-  @Get('organization/:id')
-  findAllByOrganization(@Param('id') id: number) {
-    return this.projectService.findAllByOrganization(id);
-  }
-
   @Get(':id')
   getProjectInfo(@Param('id') id: number) {
     return this.projectService.getProjectInfo(+id);
+  }
+
+  @Get(':id/tasks')
+  getAllTaskInProject(@Param('id') id: number) {
+    return this.projectService.getAllTaskInProject(+id);
   }
 
   @Patch(':id')

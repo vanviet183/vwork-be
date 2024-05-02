@@ -16,12 +16,17 @@ export class Group {
   id: number;
 
   @Column()
+  teamlead: number;
+
+  @Column()
   groupName: string;
 
-  @ManyToOne(() => Organization, (organization) => organization.groups)
+  @ManyToOne(() => Organization, (organization) => organization.groups, {
+    eager: true,
+  })
   organization: Organization;
 
-  @OneToMany(() => User, (user) => user.group)
+  @OneToMany(() => User, (user) => user.group, { eager: true })
   users: User[];
 
   @CreateDateColumn()

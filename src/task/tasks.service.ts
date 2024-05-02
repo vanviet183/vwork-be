@@ -27,20 +27,28 @@ export class TaskService {
       throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
     }
 
-    const user = await this.userRepository.findOneBy({
-      id: createTaskDto.userId,
-    });
-
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    let userResponsible = null;
+    if (createTaskDto.userResponsible) {
+      userResponsible = await this.userRepository.findOneBy({
+        id: createTaskDto.userResponsible,
+      });
     }
+    const promiseAllGetListUser = createTaskDto.listUserImplement.map((id) =>
+      this.userRepository.findOneBy({ id }),
+    );
+
+    const listUserImplement = await Promise.all(promiseAllGetListUser);
 
     const newTask = await this.taskRepository.create(createTaskDto);
+    newTask.project = project;
+    newTask.userResponsible = userResponsible
+      ? userResponsible.id
+      : createTaskDto.userResponsible;
+
     if (!newTask.users) {
       newTask.users = [];
     }
-    newTask.users.push(user);
-    newTask.project = project;
+    newTask.users.push(...listUserImplement);
     await this.taskRepository.create(newTask);
     return await this.taskRepository.save({ ...newTask, status: 'Doing' });
   }
@@ -61,6 +69,34 @@ export class TaskService {
     });
     const listItems = listTask.filter((item) => item.project.id === id);
     return { listTask: listItems };
+  }
+
+  async getAllTaskRequireInTask(id: number) {
+    const task = await this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.taskRequires', 'task-require')
+      .where('task.id = :id', { id })
+      .getOne();
+
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    return { listTaskRequire: task.taskRequires };
+  }
+
+  async getAllDocumentInTask(id: number) {
+    const task = await this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.documents', 'document')
+      .where('task.id = :id', { id })
+      .getOne();
+
+    if (!task) {
+      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+    }
+
+    return { listDocument: task.documents };
   }
 
   async getTaskInfo(id: number) {

@@ -5,12 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Organization } from 'src/organization/entities/organization.entity';
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectRepository(Organization)
     private organizationRepository: Repository<Organization>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     @InjectRepository(Project)
     private projectRepository: Repository<Project>,
   ) {}
@@ -24,31 +27,43 @@ export class ProjectService {
       throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
     }
 
+    const user = await this.userRepository.findOneBy({
+      id: createProjectDto.userId,
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
     const newProject = await this.projectRepository.create(createProjectDto);
+    newProject.organization = organiztion;
 
     return await this.projectRepository.save({
       ...newProject,
+      author: `${user.firstName} ${user.lastName}`,
       status: 'Doing',
       percent: 0,
       prioritize: false,
     });
   }
 
-  async findAll() {
-    return await this.projectRepository.find();
+  async getAllTaskInProject(id: number) {
+    const project = await this.projectRepository
+      .createQueryBuilder('project')
+      .leftJoinAndSelect('project.tasks', 'task')
+      .leftJoinAndSelect('task.users', 'user')
+      .where('project.id = :id', { id })
+      .getOne();
+
+    if (!project) {
+      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+    }
+
+    return { listTask: project.tasks };
   }
 
-  async findAllByOrganization(id: number) {
-    const organiztion = await this.organizationRepository.findOneBy({
-      id,
-    });
-    if (!organiztion) {
-      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
-    }
-    const listProject = await this.projectRepository.find({
-      relations: ['organization'],
-    });
-    return { listProject };
+  async findAll() {
+    return await this.projectRepository.find();
   }
 
   async getProjectInfo(id: number) {

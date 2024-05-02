@@ -29,6 +29,7 @@ export class AuthService {
       userId: newUser.id,
       accessToken,
       refreshToken,
+      role: newUser.role,
     };
     return response;
   }
@@ -55,7 +56,7 @@ export class AuthService {
       userId: user.id,
       accessToken,
       refreshToken,
-      // organization: user.organization,
+      role: user.role,
     };
     return response;
   }

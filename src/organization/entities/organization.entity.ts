@@ -13,6 +13,9 @@ export class Organization {
   id: number;
 
   @Column()
+  author: number;
+
+  @Column()
   organizationName: string;
 
   @Column()

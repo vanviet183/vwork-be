@@ -16,7 +16,7 @@ export class Document {
   fileName: string;
 
   @Column()
-  filePath: number;
+  filePath: string;
 
   @ManyToOne(() => Task, (task) => task.documents)
   task: Task;

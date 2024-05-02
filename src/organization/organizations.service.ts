@@ -4,7 +4,6 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Organization } from './entities/organization.entity';
 import { Repository } from 'typeorm';
-import { JoinOrganizationDto } from './dto/join-organization.dto';
 import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
@@ -25,42 +24,83 @@ export class OrganizationService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
+    // create organization
     const newOrganiztion = await this.organizationRepository.create({
       ...createOrganizationDto,
     });
-    // if (!newOrganiztion.users) {
-    //   newOrganiztion.users = [];
-    // }
-    // user.role = createOrganizationDto.role;
-    // newOrganiztion.users.push(user);
-    await this.userRepository.save(user);
-    return await this.organizationRepository.save(newOrganiztion);
+    const organization = await this.organizationRepository.save(newOrganiztion);
+
+    organization.author = user.id;
+
+    return { message: 'Tạo tổ chức thành công', organization };
   }
 
-  async join(joinOrganizationDto: JoinOrganizationDto) {
-    const organiztion = await this.organizationRepository.findOneBy({
-      id: joinOrganizationDto.organizationId,
+  // async join(joinOrganizationDto: JoinOrganizationDto) {
+  //   const organiztion = await this.organizationRepository.findOneBy({
+  //     id: joinOrganizationDto.organizationId,
+  //   });
+  //   if (!organiztion) {
+  //     throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+  //   }
+
+  //   return await this.organizationRepository.save(organiztion);
+  // }
+
+  async getAllGroupInOrganization(id: number) {
+    const organization = await this.organizationRepository.findOne({
+      where: { id },
+      relations: ['groups'],
     });
-    if (!organiztion) {
+
+    if (!organization) {
       throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
     }
-    const user = await this.userRepository.findOneBy({
-      id: joinOrganizationDto.userId,
-    });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-    // if (!organiztion.users) {
-    //   organiztion.users = [];
-    // }
-    // organiztion.users.push(user);
-    return await this.organizationRepository.save(organiztion);
+
+    return { listGroup: organization.groups };
   }
 
   async getAllUserInOrganization(id: number) {
+    const organization = await this.organizationRepository.findOne({
+      where: { id },
+      relations: ['groups'],
+    });
+
+    if (!organization) {
+      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+    }
+
+    const listUser = organization.groups.flatMap((entry) =>
+      entry.users.map((user) => ({
+        fullName: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        phone: user.phone,
+        role: this.getPositionUser(user.role),
+        group: entry.groupName === 'COMMON' ? 'Chưa có' : entry.groupName,
+      })),
+    );
+
+    return { listUser };
+  }
+
+  getPositionUser(role: string) {
+    switch (role) {
+      case 'PROJECT_MANAGER':
+        return 'Quản lý dự án';
+      case 'CEO':
+        return 'CEO';
+      case 'TEAMLEAD':
+        return 'Trưởng nhóm';
+      case 'EMPLOYEE':
+        return 'Nhân viên';
+      default:
+        return '';
+    }
+  }
+
+  async getAllProjectInOrganization(id: number) {
     const organization = await this.organizationRepository
       .createQueryBuilder('organization')
-      .leftJoinAndSelect('organization.users', 'user')
+      .leftJoinAndSelect('organization.projects', 'project')
       .where('organization.id = :id', { id })
       .getOne();
 
@@ -68,16 +108,18 @@ export class OrganizationService {
       throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
     }
 
-    // return { listUser: organization.users };
-    return { listUser: organization };
+    return { listProject: organization.projects };
   }
 
   async findAll() {
     return await this.organizationRepository.find();
   }
 
-  async findOne(id: number) {
-    return await this.organizationRepository.findOneBy({ id });
+  async getOrganizationInfo(id: number) {
+    return await this.organizationRepository.findOne({
+      where: { id },
+      relations: ['groups'],
+    });
   }
 
   async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {

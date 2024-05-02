@@ -23,6 +23,9 @@ export class User {
   @Column()
   lastName: string;
 
+  @Column()
+  phone: string;
+
   @Column({ unique: true })
   email: string;
 

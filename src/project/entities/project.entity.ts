@@ -20,6 +20,9 @@ export class Project {
   projectName: string;
 
   @Column()
+  author: string;
+
+  @Column()
   description: string;
 
   @Column()
@@ -40,7 +43,7 @@ export class Project {
   @ManyToOne(() => Organization, (organization) => organization.projects)
   organization: Organization;
 
-  @OneToMany(() => Task, (task) => task.project)
+  @OneToMany(() => Task, (task) => task.project, { eager: true })
   tasks: Task[];
 
   @OneToMany(() => Meeting, (meeting) => meeting.project)

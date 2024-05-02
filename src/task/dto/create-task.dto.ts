@@ -1,9 +1,9 @@
 export class CreateTaskDto {
-  userId: number;
   projectId: number;
   taskName: string;
+  userResponsible: number | undefined;
+  listUserImplement: number[];
   prioritize: string;
   startDate: string;
   endDate: string;
-  parentTaskId?: number;
 }
