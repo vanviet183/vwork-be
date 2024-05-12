@@ -20,6 +20,11 @@ export class TaskController {
     return this.taskService.create(createTaskDto);
   }
 
+  @Post('status')
+  updateStatusTask(@Body() updateTaskDto: UpdateTaskDto) {
+    return this.taskService.updateStatusTask(updateTaskDto);
+  }
+
   @Get()
   findAll() {
     return this.taskService.findAll();

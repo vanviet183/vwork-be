@@ -15,7 +15,7 @@ import { UpdateMeetingDto } from './dto/update-meeting.dto';
 export class MeetingController {
   constructor(private readonly meetingService: MeetingService) {}
 
-  @Post()
+  @Post('create')
   create(@Body() createMeetingDto: CreateMeetingDto) {
     return this.meetingService.create(createMeetingDto);
   }

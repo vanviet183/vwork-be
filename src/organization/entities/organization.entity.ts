@@ -1,5 +1,6 @@
-import { Group } from 'src/group/entities/group.entity';
+import { Meeting } from 'src/meeting/entities/meeting.entity';
 import { Project } from 'src/project/entities/project.entity';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
@@ -13,10 +14,13 @@ export class Organization {
   id: number;
 
   @Column()
-  author: number;
+  author: string;
 
   @Column()
   organizationName: string;
+
+  @Column()
+  description: string;
 
   @Column()
   email: string;
@@ -24,10 +28,12 @@ export class Organization {
   @Column()
   phone: string;
 
-  @OneToMany(() => Group, (group) => group.organization)
-  groups: Group[];
+  @OneToMany(() => User, (user) => user.organization, { cascade: true })
+  users: User[];
 
-  @OneToMany(() => Project, (project) => project.organization)
+  @OneToMany(() => Project, (project) => project.organization, {
+    cascade: true,
+  })
   projects: Project[];
 
   @CreateDateColumn()

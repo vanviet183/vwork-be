@@ -18,7 +18,7 @@ export class TaskRequire {
   @Column()
   important: boolean;
 
-  @ManyToOne(() => Task, (task) => task.taskRequires)
+  @ManyToOne(() => Task, (task) => task.taskRequires, { onDelete: 'CASCADE' })
   task: Task;
 
   @CreateDateColumn()

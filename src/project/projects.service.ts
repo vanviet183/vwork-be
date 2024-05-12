@@ -24,7 +24,7 @@ export class ProjectService {
     });
 
     if (!organiztion) {
-      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Tổ chức không tồn tại', HttpStatus.NOT_FOUND);
     }
 
     const user = await this.userRepository.findOneBy({
@@ -32,19 +32,21 @@ export class ProjectService {
     });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Người dùng không tồn tại', HttpStatus.NOT_FOUND);
     }
 
     const newProject = await this.projectRepository.create(createProjectDto);
     newProject.organization = organiztion;
 
-    return await this.projectRepository.save({
+    const project = await this.projectRepository.save({
       ...newProject,
       author: `${user.firstName} ${user.lastName}`,
       status: 'Doing',
       percent: 0,
       prioritize: false,
     });
+
+    return { message: 'Tạo dự án thành công', contents: { project } };
   }
 
   async getAllTaskInProject(id: number) {
@@ -56,10 +58,45 @@ export class ProjectService {
       .getOne();
 
     if (!project) {
-      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Dự án không tồn tại', HttpStatus.NOT_FOUND);
     }
 
     return { listTask: project.tasks };
+  }
+
+  async getAllDocumentInProject(id: number) {
+    const project = await this.projectRepository
+      .createQueryBuilder('project')
+      .leftJoinAndSelect('project.tasks', 'task')
+      .leftJoinAndSelect('task.documents', 'document')
+      .where('project.id = :id', { id })
+      .getOne();
+
+    if (!project) {
+      throw new HttpException('Dự án không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    const listDocument = [];
+    project.tasks.flatMap((item) => {
+      listDocument.push(item.documents);
+    });
+
+    return { listDocument: listDocument.flat() };
+  }
+
+  async getAllMeetingInProject(id: number) {
+    const project = await this.projectRepository
+      .createQueryBuilder('project')
+      .leftJoinAndSelect('project.meetings', 'meeting')
+      .leftJoinAndSelect('meeting.users', 'user')
+      .where('project.id = :id', { id })
+      .getOne();
+
+    if (!project) {
+      throw new HttpException('Dự án không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    return { listMeeting: project.meetings };
   }
 
   async findAll() {
@@ -69,7 +106,7 @@ export class ProjectService {
   async getProjectInfo(id: number) {
     const project = await this.projectRepository.findOneBy({ id });
     if (!project) {
-      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Dự án không tồn tại', HttpStatus.NOT_FOUND);
     }
     return project;
   }
@@ -78,7 +115,14 @@ export class ProjectService {
     return `This action updates a #${id} project`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} project`;
+  async remove(id: number) {
+    const project = await this.projectRepository.findOneBy({ id });
+    if (!project) {
+      throw new HttpException('Dự án không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    await this.projectRepository.remove(project);
+
+    return { message: 'Xoá dự án thành công' };
   }
 }

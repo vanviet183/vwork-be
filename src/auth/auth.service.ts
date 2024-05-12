@@ -39,14 +39,15 @@ export class AuthService {
       email: loginUserDto.email,
     });
     if (!user) {
-      throw new HttpException('User is not exist', HttpStatus.UNAUTHORIZED);
-    }
-    const checkPass = bcrypt.compareSync(loginUserDto.password, user.password);
-    if (!checkPass) {
       throw new HttpException(
-        'Password is not correct',
+        'Người dùng không tồn tại',
         HttpStatus.UNAUTHORIZED,
       );
+    }
+
+    const checkPass = bcrypt.compareSync(loginUserDto.password, user.password);
+    if (!checkPass) {
+      throw new HttpException('Mật khẩu không đúng', HttpStatus.UNAUTHORIZED);
     }
     //generate access token and refresh token
     const payload = { id: user.id };
@@ -58,7 +59,7 @@ export class AuthService {
       refreshToken,
       role: user.role,
     };
-    return response;
+    return { message: 'Đăng nhập thành công', contents: response };
   }
 
   private async generateToken(payload: { id: number }) {

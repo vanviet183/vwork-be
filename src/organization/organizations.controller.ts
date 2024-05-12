@@ -25,11 +25,6 @@ export class OrganizationController {
   //   return this.organizationService.join(joinOrganizationDto);
   // }
 
-  @Get(':id/groups')
-  getAllGroupInOrganization(@Param('id') id: number) {
-    return this.organizationService.getAllGroupInOrganization(+id);
-  }
-
   @Get(':id/users')
   getAllUserInOrganization(@Param('id') id: number) {
     return this.organizationService.getAllUserInOrganization(+id);

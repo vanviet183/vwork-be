@@ -21,18 +21,18 @@ export class OrganizationService {
     });
 
     if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Người dùng không tồn tại', HttpStatus.NOT_FOUND);
     }
 
     // create organization
     const newOrganiztion = await this.organizationRepository.create({
       ...createOrganizationDto,
     });
+
+    newOrganiztion.author = `${user.firstName} ${user.lastName}`;
     const organization = await this.organizationRepository.save(newOrganiztion);
 
-    organization.author = user.id;
-
-    return { message: 'Tạo tổ chức thành công', organization };
+    return { message: 'Tạo tổ chức thành công', contents: { organization } };
   }
 
   // async join(joinOrganizationDto: JoinOrganizationDto) {
@@ -40,46 +40,24 @@ export class OrganizationService {
   //     id: joinOrganizationDto.organizationId,
   //   });
   //   if (!organiztion) {
-  //     throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+  //     throw new HttpException('Tổ chức không tồn tại', HttpStatus.NOT_FOUND);
   //   }
 
   //   return await this.organizationRepository.save(organiztion);
   // }
 
-  async getAllGroupInOrganization(id: number) {
-    const organization = await this.organizationRepository.findOne({
-      where: { id },
-      relations: ['groups'],
-    });
-
-    if (!organization) {
-      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
-    }
-
-    return { listGroup: organization.groups };
-  }
-
   async getAllUserInOrganization(id: number) {
-    const organization = await this.organizationRepository.findOne({
-      where: { id },
-      relations: ['groups'],
-    });
+    const organization = await this.organizationRepository
+      .createQueryBuilder('organization')
+      .leftJoinAndSelect('organization.users', 'user')
+      .where('user.id != :id', { id })
+      .getOne();
 
     if (!organization) {
-      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Tổ chức không tồn tại', HttpStatus.NOT_FOUND);
     }
 
-    const listUser = organization.groups.flatMap((entry) =>
-      entry.users.map((user) => ({
-        fullName: `${user.firstName} ${user.lastName}`,
-        email: user.email,
-        phone: user.phone,
-        role: this.getPositionUser(user.role),
-        group: entry.groupName === 'COMMON' ? 'Chưa có' : entry.groupName,
-      })),
-    );
-
-    return { listUser };
+    return { listUser: organization.users };
   }
 
   getPositionUser(role: string) {
@@ -101,18 +79,21 @@ export class OrganizationService {
     const organization = await this.organizationRepository
       .createQueryBuilder('organization')
       .leftJoinAndSelect('organization.projects', 'project')
+      .leftJoinAndSelect('project.tasks', 'task')
+      .leftJoinAndSelect('task.users', 'user')
       .where('organization.id = :id', { id })
       .getOne();
 
     if (!organization) {
-      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Tổ chức không tồn tại', HttpStatus.NOT_FOUND);
     }
 
     return { listProject: organization.projects };
   }
 
   async findAll() {
-    return await this.organizationRepository.find();
+    const listOrganization = await this.organizationRepository.find();
+    return { listOrganization };
   }
 
   async getOrganizationInfo(id: number) {
@@ -130,6 +111,13 @@ export class OrganizationService {
   }
 
   async remove(id: number) {
-    return await this.organizationRepository.delete(id);
+    const organization = await this.organizationRepository.findOneBy({ id });
+    if (!organization) {
+      throw new HttpException('Tổ chức không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    await this.organizationRepository.remove(organization);
+
+    return { message: 'Xoá tổ chức thành công' };
   }
 }

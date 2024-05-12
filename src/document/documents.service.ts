@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from 'src/task/entities/task.entity';
 import { Repository } from 'typeorm';
 import { Document } from './entities/document.entity';
-import * as path from 'path';
 
 @Injectable()
 export class DocumentService {
@@ -19,27 +18,33 @@ export class DocumentService {
     createDocumentDto: CreateDocumentDto,
     file: Express.Multer.File,
   ) {
-    const task = await this.taskRepository.findOneBy({
-      id: createDocumentDto.taskId,
-    });
+    let taskItem;
+    if (createDocumentDto.taskId) {
+      const task = await this.taskRepository.findOneBy({
+        id: createDocumentDto.taskId,
+      });
 
-    if (!task) {
-      throw new HttpException('Group not found', HttpStatus.NOT_FOUND);
+      if (!task) {
+        throw new HttpException(
+          'Công việc không tồn tại',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      taskItem = task;
     }
 
-    const currentPath = path.join(__dirname);
-    const indexOfDist = currentPath.indexOf('dist');
-
-    const filePath = currentPath.slice(0, indexOfDist) + file.path;
-
-    console.log('filePath', filePath);
+    const filePath = 'http://localhost:3005/' + file.path;
 
     const newDocument = {
       fileName: file.originalname,
       filePath: filePath,
+      type: createDocumentDto.type,
+      task: taskItem,
     };
 
-    return this.documentRepository.save(newDocument);
+    const document = await this.documentRepository.save(newDocument);
+
+    return { message: 'Thêm tài liệu thành công', contents: { document } };
   }
 
   findAll() {

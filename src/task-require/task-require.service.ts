@@ -21,7 +21,7 @@ export class TaskRequireService {
     });
 
     if (!task) {
-      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Công việc không tồn tại', HttpStatus.NOT_FOUND);
     }
 
     const newTaskRequire =

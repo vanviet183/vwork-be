@@ -8,8 +8,8 @@ import { MeetingModule } from './meeting/meetings.module';
 import { AuthModule } from './auth/auth.module';
 import { OrganizationModule } from './organization/organizations.module';
 import { TaskRequireModule } from './task-require/task-require.module';
-import { GroupModule } from './group/group.module';
-import { NotificationModule } from './notification/notification.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -23,6 +23,10 @@ import { NotificationModule } from './notification/notification.module';
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../'),
+      renderPath: '/uploads',
+    }),
     UserModule,
     TaskModule,
     ProjectModule,
@@ -31,8 +35,6 @@ import { NotificationModule } from './notification/notification.module';
     AuthModule,
     OrganizationModule,
     TaskRequireModule,
-    GroupModule,
-    NotificationModule,
   ],
 })
 export class AppModule {}

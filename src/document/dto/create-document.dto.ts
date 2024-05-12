@@ -1,3 +1,4 @@
 export class CreateDocumentDto {
-  taskId: number;
+  taskId?: number;
+  type: string;
 }

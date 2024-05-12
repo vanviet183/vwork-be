@@ -4,6 +4,6 @@ export class CreateUserDto {
   phone: string;
   email: string;
   password: string;
-  groupId: number;
+  sector: string;
   role: string;
 }

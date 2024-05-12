@@ -1,0 +1,4 @@
+﻿firstName;lastName;phone;email;password;role
+Van;Viet 1;147852369;vietnv01@gmail.com;vietnv01;EMPLOYEE
+Van;Viet 2;147852369;vietnv02@gmail.com;vietnv02;MANAGER
+Van;Viet 3;;vietnv03@gmail.com;vietnv03;PROJECT_MANAGER

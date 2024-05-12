@@ -18,7 +18,16 @@ export class Document {
   @Column()
   filePath: string;
 
-  @ManyToOne(() => Task, (task) => task.documents)
+  @Column()
+  type: string;
+
+  @Column({ default: false })
+  isSaved: boolean;
+
+  @ManyToOne(() => Task, (task) => task.documents, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
   task: Task;
 
   @CreateDateColumn()

@@ -23,7 +23,10 @@ export class Task {
   taskName: string;
 
   @Column({ nullable: true })
-  userResponsible: number;
+  userResponsible: string;
+
+  @Column()
+  phase: string;
 
   @Column()
   prioritize: string;
@@ -48,13 +51,15 @@ export class Task {
   })
   users?: User[];
 
-  @ManyToOne(() => Project, (project) => project.tasks)
+  @ManyToOne(() => Project, (project) => project.tasks, { onDelete: 'CASCADE' })
   project: Project;
 
-  @OneToMany(() => Document, (document) => document.task)
+  @OneToMany(() => Document, (document) => document.task, { cascade: true })
   documents: Document[];
 
-  @OneToMany(() => TaskRequire, (taskRequire) => taskRequire.task)
+  @OneToMany(() => TaskRequire, (taskRequire) => taskRequire.task, {
+    cascade: true,
+  })
   taskRequires: TaskRequire[];
 
   @CreateDateColumn()

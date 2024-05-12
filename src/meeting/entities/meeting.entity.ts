@@ -1,3 +1,4 @@
+import { Organization } from 'src/organization/entities/organization.entity';
 import { Project } from 'src/project/entities/project.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
@@ -18,19 +19,22 @@ export class Meeting {
   @Column()
   title: string;
 
-  @Column()
-  content: string;
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({ nullable: true })
+  author: string;
 
   @Column()
-  time: number;
+  startTime: string;
 
   @Column()
-  address: string;
+  endTime: string;
 
-  @ManyToMany(() => User, (user) => user.meetings, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
+  @Column({ nullable: true })
+  location: string;
+
+  @ManyToMany(() => User, (user) => user.meetings)
   @JoinTable({
     name: 'user_meeting',
   })

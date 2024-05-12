@@ -40,10 +40,12 @@ export class Project {
   @Column()
   prioritize: boolean;
 
-  @ManyToOne(() => Organization, (organization) => organization.projects)
+  @ManyToOne(() => Organization, (organization) => organization.projects, {
+    onDelete: 'CASCADE',
+  })
   organization: Organization;
 
-  @OneToMany(() => Task, (task) => task.project, { eager: true })
+  @OneToMany(() => Task, (task) => task.project, { eager: true, cascade: true })
   tasks: Task[];
 
   @OneToMany(() => Meeting, (meeting) => meeting.project)

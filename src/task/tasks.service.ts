@@ -6,6 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from 'src/project/entities/project.entity';
 import { User } from 'src/user/entities/user.entity';
+import { TASK_STATUS } from 'src/contants/common';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class TaskService {
@@ -24,15 +26,9 @@ export class TaskService {
     });
 
     if (!project) {
-      throw new HttpException('Project not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Dự án không tồn tại', HttpStatus.NOT_FOUND);
     }
 
-    let userResponsible = null;
-    if (createTaskDto.userResponsible) {
-      userResponsible = await this.userRepository.findOneBy({
-        id: createTaskDto.userResponsible,
-      });
-    }
     const promiseAllGetListUser = createTaskDto.listUserImplement.map((id) =>
       this.userRepository.findOneBy({ id }),
     );
@@ -41,16 +37,27 @@ export class TaskService {
 
     const newTask = await this.taskRepository.create(createTaskDto);
     newTask.project = project;
-    newTask.userResponsible = userResponsible
-      ? userResponsible.id
-      : createTaskDto.userResponsible;
 
-    if (!newTask.users) {
-      newTask.users = [];
+    newTask.users = listUserImplement;
+    newTask.status = 'None';
+
+    const task = await this.taskRepository.save(newTask);
+    return { message: 'Thêm công việc thành công', contents: { task } };
+  }
+
+  async updateStatusTask(updateTaskDto: UpdateTaskDto) {
+    const task = await this.taskRepository.findOneBy({
+      id: updateTaskDto.taskId,
+    });
+
+    if (!task) {
+      throw new HttpException('Công việc không tồn tại', HttpStatus.NOT_FOUND);
     }
-    newTask.users.push(...listUserImplement);
-    await this.taskRepository.create(newTask);
-    return await this.taskRepository.save({ ...newTask, status: 'Doing' });
+    task.status = updateTaskDto.status;
+    if (updateTaskDto.status === TASK_STATUS.COMPLETED) {
+      task.finishDay = dayjs().format('DD/MM/YYYY');
+    }
+    return await this.taskRepository.save(task);
   }
 
   findAll() {
@@ -62,7 +69,7 @@ export class TaskService {
       id,
     });
     if (!project) {
-      throw new HttpException('Organization not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Tổ chức không tồn tại', HttpStatus.NOT_FOUND);
     }
     const listTask = await this.taskRepository.find({
       relations: ['project'],
@@ -79,7 +86,7 @@ export class TaskService {
       .getOne();
 
     if (!task) {
-      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Công việc không tồn tại', HttpStatus.NOT_FOUND);
     }
 
     return { listTaskRequire: task.taskRequires };
@@ -93,7 +100,7 @@ export class TaskService {
       .getOne();
 
     if (!task) {
-      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Công việc không tồn tại', HttpStatus.NOT_FOUND);
     }
 
     return { listDocument: task.documents };
@@ -102,7 +109,7 @@ export class TaskService {
   async getTaskInfo(id: number) {
     const task = this.taskRepository.findOneBy({ id });
     if (!task) {
-      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Công việc không tồn tại', HttpStatus.NOT_FOUND);
     }
     return task;
   }

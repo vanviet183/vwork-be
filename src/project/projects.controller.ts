@@ -35,6 +35,16 @@ export class ProjectController {
     return this.projectService.getAllTaskInProject(+id);
   }
 
+  @Get(':id/documents')
+  getAllDocumentInProject(@Param('id') id: number) {
+    return this.projectService.getAllDocumentInProject(+id);
+  }
+
+  @Get(':id/meetings')
+  getAllMeetingInProject(@Param('id') id: number) {
+    return this.projectService.getAllMeetingInProject(+id);
+  }
+
   @Patch(':id')
   acceptProject(
     @Param('id') id: number,

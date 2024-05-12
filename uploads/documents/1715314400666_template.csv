@@ -1,0 +1,10 @@
+firstName;lastName;phone;email;password;sector;role;organizationId
+Nguyen Van;Son;369852147;sonnv@vwork.com;123456;BACKEND;TEAMLEAD;1
+Nguyen Van;Long;369851598;longnv@vwork.com;123456;FRONTEND;EMPLOYEE;1
+Nguyen Cong;Truong;369852365;truongcn@vwork.com;123456;FRONTEND;EMPLOYEE;1
+Nguyen Thanh ;Trung;;trungnt@vwork.com;123456;BACKEND;EMPLOYEE;1
+Nguyen Van;Viet;;vietnv@vwork.com;123456;FRONTEND;TEAMLEAD;1
+Tran Dinh;Long;147852369;longtd@vwork.com;123456;BA;TEAMLEAD;1
+Nguyen Thi;Lan;147852369;lannt@vwork.com;123456;TESTER;TEAMLEAD;1
+Phuong Nha;Linh;147852369;linhpn@vwork.com;123456;TESTER;EMPLOYEE;1
+Phan Dinh;Thanh;147852369;thanhpd@vwork.com;123456;BA;EMPLOYEE;1

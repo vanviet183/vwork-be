@@ -9,21 +9,20 @@ import {
 
 import { Task } from 'src/task/entities/task.entity';
 import { Meeting } from 'src/meeting/entities/meeting.entity';
-import { Notification } from 'src/notification/entities/notification.entity';
-import { Group } from 'src/group/entities/group.entity';
+import { Organization } from 'src/organization/entities/organization.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastName: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
   @Column({ unique: true })
@@ -36,19 +35,24 @@ export class User {
   avatar: string;
 
   @Column({ nullable: true, default: null })
+  sector: string;
+
+  @Column({ nullable: true, default: null })
   role: string;
 
-  @ManyToOne(() => Group, (group) => group.users)
-  group: Group;
+  @ManyToOne(() => Organization, (organization) => organization.users, {
+    onDelete: 'CASCADE',
+    nullable: true,
+  })
+  organization: Organization;
 
   @ManyToMany(() => Task, (task) => task.users)
   tasks: Task[];
 
-  @ManyToMany(() => Meeting, (meeting) => meeting.users)
+  @ManyToMany(() => Meeting, (meeting) => meeting.users, {
+    cascade: ['remove'],
+  })
   meetings: Meeting[];
-
-  @ManyToMany(() => Notification, (notification) => notification.users)
-  notifications: Notification[];
 
   @CreateDateColumn()
   createdAt: Date;
