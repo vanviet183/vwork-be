@@ -139,8 +139,6 @@ export class UserService {
       .where('user.role != :role', { role: 'ADMIN' })
       .getMany();
 
-    console.log('list', listUser);
-
     return { listUser };
   }
 
@@ -194,11 +192,48 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    return 'test';
+    let organization;
+    if (updateUserDto.organizationId) {
+      organization = await this.organizationRepository.findOneBy({
+        id: updateUserDto.organizationId,
+      });
+      if (!organization) {
+        throw new HttpException('Tổ chức không tồn tại', HttpStatus.NOT_FOUND);
+      }
+    }
+
+    const user = await this.userRepository
+      .createQueryBuilder()
+      .update(User)
+      .set({
+        firstName: updateUserDto.firstName,
+        lastName: updateUserDto.lastName,
+        phone: updateUserDto.phone,
+        email: updateUserDto.email,
+        password: updateUserDto.password,
+        sector: updateUserDto.sector,
+        role: updateUserDto.role,
+        organization: organization,
+      })
+      .where('id = :id', { id })
+      .execute();
+
+    if (!user) {
+      throw new HttpException('Người dùng không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    return { message: 'Cập nhật thông tin thành công', contents: { user } };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new HttpException('Người dùng không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    await this.userRepository.remove(user);
+
+    return { message: 'Xoá người dùng thành công' };
   }
 
   private async hashPassword(password: string): Promise<string> {

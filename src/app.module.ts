@@ -10,6 +10,7 @@ import { OrganizationModule } from './organization/organizations.module';
 import { TaskRequireModule } from './task-require/task-require.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -26,6 +27,24 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../'),
       renderPath: '/uploads',
+    }),
+    MailerModule.forRoot({
+      // transport: {
+      //   host: 'sandbox.smtp.mailtrap.io',
+      //   port: 2525,
+      //   auth: {
+      //     user: 'cfcef0ad165e86',
+      //     pass: 'd35b5ceefda529',
+      //   },
+      // },
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 587,
+        auth: {
+          user: 'vanvietgg183@gmail.com',
+          pass: 'jnxcilstwcbuhuvr',
+        },
+      },
     }),
     UserModule,
     TaskModule,

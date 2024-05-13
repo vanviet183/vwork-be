@@ -31,7 +31,7 @@ export class Task {
   @Column()
   prioritize: string;
 
-  @Column()
+  @Column({ default: 'None' })
   status: string;
 
   @Column()
@@ -42,6 +42,9 @@ export class Task {
 
   @Column({ nullable: true })
   finishDay: string;
+
+  @Column({ default: 0 })
+  progress: number;
 
   @ManyToMany(() => User, (user) => user.tasks, {
     eager: true,

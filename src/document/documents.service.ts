@@ -40,6 +40,7 @@ export class DocumentService {
       filePath: filePath,
       type: createDocumentDto.type,
       task: taskItem,
+      isSaved: createDocumentDto.isSaved,
     };
 
     const document = await this.documentRepository.save(newDocument);
@@ -59,7 +60,14 @@ export class DocumentService {
     return `This action updates a #${id} document`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} document`;
+  async remove(id: number) {
+    const document = await this.documentRepository.findOneBy({ id });
+    if (!document) {
+      throw new HttpException('Tài liệu không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    await this.documentRepository.remove(document);
+
+    return { message: 'Xoá tài liệu thành công' };
   }
 }

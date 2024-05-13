@@ -8,6 +8,7 @@ export enum ROLE {
 }
 
 export enum TASK_STATUS {
+  NONE = 'None',
   DOING = 'Doing',
   WAIT_ACCEPT = 'Wait',
   COMPLETED = 'Completed',

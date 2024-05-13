@@ -48,11 +48,6 @@ export class UserController {
     return this.userService.getAllProjectsUserJoin(+id);
   }
 
-  @Get('admin/:id')
-  getAdminInfo(@Param('id') id: string) {
-    return this.userService.getAdminInfo(+id);
-  }
-
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);

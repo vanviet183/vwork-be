@@ -1,6 +1,6 @@
 export class CreateMeetingDto {
   projectId: number;
-  author: string;
+  userId: number;
   title: string;
   description: string;
   location: string;

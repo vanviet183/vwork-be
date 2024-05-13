@@ -111,8 +111,24 @@ export class ProjectService {
     return project;
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(id: number, updateProjectDto: UpdateProjectDto) {
+    const project = await this.projectRepository
+      .createQueryBuilder()
+      .update(Project)
+      .set({
+        projectName: updateProjectDto.projectName,
+        description: updateProjectDto.description,
+        startDate: updateProjectDto.startDate,
+        endDate: updateProjectDto.endDate,
+      })
+      .where('id = :id', { id: updateProjectDto.projectId })
+      .execute();
+
+    if (!project) {
+      throw new HttpException('Dự án không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    return { message: 'Cập nhật dự án thành công', contents: { project } };
   }
 
   async remove(id: number) {
