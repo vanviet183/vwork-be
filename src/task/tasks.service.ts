@@ -31,11 +31,14 @@ export class TaskService {
       throw new HttpException('Dự án không tồn tại', HttpStatus.NOT_FOUND);
     }
 
-    const promiseAllGetListUser = createTaskDto.listUserImplement.map((id) =>
-      this.userRepository.findOneBy({ id }),
-    );
+    let listUserImplement = [];
+    if (createTaskDto.listUserImplement) {
+      const promiseAllGetListUser = createTaskDto.listUserImplement.map((id) =>
+        this.userRepository.findOneBy({ id }),
+      );
 
-    const listUserImplement = await Promise.all(promiseAllGetListUser);
+      listUserImplement = await Promise.all(promiseAllGetListUser);
+    }
 
     const newTask = await this.taskRepository.create(createTaskDto);
     newTask.project = project;
@@ -75,28 +78,7 @@ export class TaskService {
     await this.taskRepository.save(task);
 
     if (updateTaskDto.status === TASK_STATUS.COMPLETED) {
-      const project = await this.projectRepository
-        .createQueryBuilder('project')
-        .leftJoinAndSelect('project.tasks', 'task')
-        .where('project.id = :id', { id: task.project.id })
-        .getOne();
-
-      const listTaskInProject = project.tasks;
-      const listTaskCompleted = listTaskInProject.filter(
-        (task) => task.status === TASK_STATUS.COMPLETED,
-      );
-      const percent =
-        (listTaskCompleted.length / listTaskInProject.length) * 100;
-
-      await this.projectRepository
-        .createQueryBuilder()
-        .update(Project)
-        .set({
-          percent: Math.round(percent * 100) / 100,
-          status: percent === 100 ? 'Completed' : 'Doing',
-        })
-        .where('id = :id', { id: project.id })
-        .execute();
+      await this.updateStatusProjectByTask(task.project.id);
     }
     return {
       message: 'Cập nhật trạng thái công việc thành công',
@@ -224,5 +206,28 @@ export class TaskService {
       subject: subjectVal,
       text: messageVal,
     });
+  }
+
+  async updateStatusProjectByTask(id: number) {
+    const project = await this.projectRepository
+      .createQueryBuilder('project')
+      .leftJoinAndSelect('project.tasks', 'task')
+      .where('project.id = :id', { id })
+      .getOne();
+
+    const listTaskInProject = project.tasks;
+    const listTaskCompleted = listTaskInProject.filter(
+      (task) => task.status === TASK_STATUS.COMPLETED,
+    );
+    const percent = (listTaskCompleted.length / listTaskInProject.length) * 100;
+
+    await this.projectRepository
+      .createQueryBuilder()
+      .update(Project)
+      .set({
+        percent: Math.round(percent * 100) / 100,
+      })
+      .where('id = :id', { id: project.id })
+      .execute();
   }
 }

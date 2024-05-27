@@ -10,6 +10,7 @@ import {
 import { TaskRequireService } from './task-require.service';
 import { CreateTaskRequireDto } from './dto/create-task-require.dto';
 import { UpdateTaskRequireDto } from './dto/update-task-require.dto';
+import { UpdateStatusTaskRequireDto } from './dto/update-status-task-require.dto';
 
 @Controller('task-require')
 export class TaskRequireController {
@@ -26,8 +27,17 @@ export class TaskRequireController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.taskRequireService.findOne(+id);
+  getTaskRequireInfo(@Param('id') id: string) {
+    return this.taskRequireService.getTaskRequireInfo(+id);
+  }
+
+  @Post('status')
+  updateStatusTaskRequire(
+    @Body() updateStatusTaskRequireDto: UpdateStatusTaskRequireDto,
+  ) {
+    return this.taskRequireService.updateStatusTaskRequire(
+      updateStatusTaskRequireDto,
+    );
   }
 
   @Patch(':id')

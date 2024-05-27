@@ -14,6 +14,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateListUserDto } from './dto/create-list-user.dto';
+import { UpdateUserInfoDto } from './dto/update-user-info.dto';
+import { UpdatePasswordUserDto } from './dto/update-password-user.dto';
 
 @Controller('users')
 export class UserController {
@@ -22,6 +24,16 @@ export class UserController {
   @Post('create')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @Post('info')
+  updateUserInfo(@Body() updateUserInfoDto: UpdateUserInfoDto) {
+    return this.userService.updateUserInfo(updateUserInfoDto);
+  }
+
+  @Post('password')
+  updatePasswordUser(@Body() updatePasswordUserDto: UpdatePasswordUserDto) {
+    return this.userService.updatePasswordUser(updatePasswordUserDto);
   }
 
   @Post('create-list-user')

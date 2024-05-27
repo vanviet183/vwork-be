@@ -1,4 +1,3 @@
-import { Organization } from 'src/organization/entities/organization.entity';
 import { Project } from 'src/project/entities/project.entity';
 import { User } from 'src/user/entities/user.entity';
 import {
@@ -16,7 +15,7 @@ export class Meeting {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   title: string;
 
   @Column({ nullable: true })
@@ -33,6 +32,9 @@ export class Meeting {
 
   @Column({ nullable: true })
   location: string;
+
+  @Column()
+  type: string;
 
   @ManyToMany(() => User, (user) => user.meetings)
   @JoinTable({

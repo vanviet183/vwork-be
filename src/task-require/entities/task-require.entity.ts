@@ -16,6 +16,21 @@ export class TaskRequire {
   requireContent: string;
 
   @Column()
+  startDate: string;
+
+  @Column()
+  endDate: string;
+
+  @Column()
+  listUserImplement: string;
+
+  @Column({ nullable: true })
+  percent: string;
+
+  @Column({ default: 'None' })
+  status: string;
+
+  @Column()
   important: boolean;
 
   @ManyToOne(() => Task, (task) => task.taskRequires, { onDelete: 'CASCADE' })

@@ -97,17 +97,45 @@ export class OrganizationService {
   }
 
   async getOrganizationInfo(id: number) {
-    return await this.organizationRepository.findOne({
-      where: { id },
-      relations: ['groups'],
-    });
+    const organization = await this.organizationRepository.findOneBy({ id });
+    if (!organization) {
+      throw new HttpException('Tổ chức không tồn tại', HttpStatus.UNAUTHORIZED);
+    }
+    return organization;
   }
 
   async update(id: number, updateOrganizationDto: UpdateOrganizationDto) {
-    return this.organizationRepository.update(
-      { id },
-      { ...updateOrganizationDto },
-    );
+    const user = await this.userRepository.findOneBy({
+      id: updateOrganizationDto.userId,
+    });
+
+    if (!user) {
+      throw new HttpException('Người dùng không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    const authorUpdate = `${user.firstName} ${user.lastName}`;
+
+    const organization = await this.organizationRepository
+      .createQueryBuilder()
+      .update(Organization)
+      .set({
+        organizationName: updateOrganizationDto.organizationName,
+        description: updateOrganizationDto.description,
+        email: updateOrganizationDto.email,
+        phone: updateOrganizationDto.phone,
+        author: authorUpdate,
+      })
+      .where('id = :id', { id })
+      .execute();
+
+    if (!organization) {
+      throw new HttpException('Tổ chức không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      message: 'Cập nhật tổ chức thành công',
+      contents: { organization },
+    };
   }
 
   async remove(id: number) {

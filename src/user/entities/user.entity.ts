@@ -32,6 +32,9 @@ export class User {
   password: string;
 
   @Column({ nullable: true, default: null })
+  birthday: string;
+
+  @Column({ nullable: true, default: null })
   avatar: string;
 
   @Column({ nullable: true, default: null })

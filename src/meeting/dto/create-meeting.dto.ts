@@ -7,4 +7,5 @@ export class CreateMeetingDto {
   startTime: string;
   endTime: string;
   listUser: number[];
+  type?: string;
 }

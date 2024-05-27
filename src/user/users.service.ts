@@ -9,6 +9,8 @@ import { CreateListUserDto } from './dto/create-list-user.dto';
 import { Organization } from 'src/organization/entities/organization.entity';
 import * as bcrypt from 'bcrypt';
 import { ROLE } from 'src/contants/common';
+import { UpdateUserInfoDto } from './dto/update-user-info.dto';
+import { UpdatePasswordUserDto } from './dto/update-password-user.dto';
 
 interface IUser {
   firstName: string;
@@ -223,6 +225,62 @@ export class UserService {
     }
 
     return { message: 'Cập nhật thông tin thành công', contents: { user } };
+  }
+
+  async updateUserInfo(updateUserInfoDto: UpdateUserInfoDto) {
+    const user = await this.userRepository.findOneBy({
+      id: updateUserInfoDto.userId,
+    });
+
+    if (!user) {
+      throw new HttpException('Người dùng không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    if (updateUserInfoDto.firstName) {
+      user.firstName = updateUserInfoDto.firstName;
+    }
+    if (updateUserInfoDto.lastName) {
+      user.lastName = updateUserInfoDto.lastName;
+    }
+    if (updateUserInfoDto.birthday) {
+      user.birthday = updateUserInfoDto.birthday;
+    }
+    if (updateUserInfoDto.phone) {
+      user.phone = updateUserInfoDto.phone;
+    }
+
+    await this.userRepository.save(user);
+
+    return { message: 'Cập nhật thông tin thành công', contents: { user } };
+  }
+
+  async updatePasswordUser(updatePasswordUserDto: UpdatePasswordUserDto) {
+    const user = await this.userRepository.findOneBy({
+      id: updatePasswordUserDto.userId,
+    });
+
+    if (!user) {
+      throw new HttpException('Người dùng không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    if (updatePasswordUserDto.oldPassword) {
+      const checkPass = bcrypt.compareSync(
+        updatePasswordUserDto.oldPassword,
+        user.password,
+      );
+      if (!checkPass) {
+        throw new HttpException('Mật khẩu không đúng', HttpStatus.UNAUTHORIZED);
+      }
+    }
+
+    const hashPassword = await this.hashPassword(
+      updatePasswordUserDto.newPassword,
+    );
+
+    user.password = hashPassword;
+    await this.userRepository.save(user);
+
+    return { message: 'Cập nhật mật khẩu thành công', contents: { user } };
   }
 
   async remove(id: number) {

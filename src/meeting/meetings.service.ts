@@ -37,11 +37,13 @@ export class MeetingService {
       throw new HttpException('Người dùng không tồn tại', HttpStatus.NOT_FOUND);
     }
 
-    const promiseAllGetListUser = createMeetingDto.listUser.map((id) =>
-      this.userRepository.findOneBy({ id }),
-    );
-
-    const users = await Promise.all(promiseAllGetListUser);
+    let users = [];
+    if (createMeetingDto.type === 'PROJECT') {
+      const promiseAllGetListUser = createMeetingDto.listUser.map((id) =>
+        this.userRepository.findOneBy({ id }),
+      );
+      users = await Promise.all(promiseAllGetListUser);
+    }
 
     const newMeeting = await this.meetingRepository.create(createMeetingDto);
     newMeeting.author = `${user.firstName} ${user.lastName}`;
