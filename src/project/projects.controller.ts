@@ -10,6 +10,7 @@ import {
 import { ProjectService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { UpdateStatusProjectDto } from './dto/update-status-project.dto';
 
 @Controller('projects')
 export class ProjectController {
@@ -18,6 +19,11 @@ export class ProjectController {
   @Post('create')
   create(@Body() createProjectDto: CreateProjectDto) {
     return this.projectService.create(createProjectDto);
+  }
+
+  @Post('status')
+  updateStatusProject(@Body() updateStatusProjectDto: UpdateStatusProjectDto) {
+    return this.projectService.updateStatusProject(updateStatusProjectDto);
   }
 
   @Get('')

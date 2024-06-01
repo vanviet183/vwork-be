@@ -6,12 +6,16 @@ import { Organization } from 'src/organization/entities/organization.entity';
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { User } from 'src/user/entities/user.entity';
+import { Document } from 'src/document/entities/document.entity';
+import { UpdateStatusProjectDto } from './dto/update-status-project.dto';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectRepository(Organization)
     private organizationRepository: Repository<Organization>,
+    @InjectRepository(Document)
+    private documentRepository: Repository<Document>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(Project)
@@ -81,6 +85,14 @@ export class ProjectService {
       listDocument.push(item.documents);
     });
 
+    const listDocumentProject = await this.documentRepository.find();
+
+    const listDocumentProjectFilter = listDocumentProject.filter(
+      (item) => Number(item.idProject) === Number(id),
+    );
+
+    listDocument.push(listDocumentProjectFilter);
+
     return { listDocument: listDocument.flat() };
   }
 
@@ -122,6 +134,23 @@ export class ProjectService {
         endDate: updateProjectDto.endDate,
       })
       .where('id = :id', { id: updateProjectDto.projectId })
+      .execute();
+
+    if (!project) {
+      throw new HttpException('Dự án không tồn tại', HttpStatus.NOT_FOUND);
+    }
+
+    return { message: 'Cập nhật dự án thành công', contents: { project } };
+  }
+
+  async updateStatusProject(updateStatusProjectDto: UpdateStatusProjectDto) {
+    const project = await this.projectRepository
+      .createQueryBuilder()
+      .update(Project)
+      .set({
+        status: updateStatusProjectDto.status,
+      })
+      .where('id = :id', { id: updateStatusProjectDto.projectId })
       .execute();
 
     if (!project) {

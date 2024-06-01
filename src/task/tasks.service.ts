@@ -68,7 +68,7 @@ export class TaskService {
     }
     task.status = updateTaskDto.status;
     if (updateTaskDto.status === TASK_STATUS.COMPLETED) {
-      task.finishDay = dayjs().format('YYYY-MM-DD');
+      task.finishDay = dayjs().format('YYYY/MM/DD');
       task.progress = 100;
     } else if (updateTaskDto.status === TASK_STATUS.WAIT_ACCEPT) {
       task.progress = 50;

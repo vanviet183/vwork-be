@@ -20,7 +20,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       port: 3306,
       username: 'root',
       password: 'Viet152418',
-      database: 'vwork_be',
+      database: 'vwork_backup',
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),

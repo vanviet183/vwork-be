@@ -24,6 +24,9 @@ export class Document {
   @Column({ default: false })
   isSaved: boolean;
 
+  @Column({ nullable: true })
+  idProject: number;
+
   @ManyToOne(() => Task, (task) => task.documents, {
     onDelete: 'CASCADE',
     nullable: true,

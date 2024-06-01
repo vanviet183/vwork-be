@@ -36,8 +36,8 @@ export class DocumentController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.documentService.findOne(+id);
+  getDocumentInfo(@Param('id') id: number) {
+    return this.documentService.getDocumentInfo(+id);
   }
 
   @Patch(':id')

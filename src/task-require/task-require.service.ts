@@ -187,7 +187,7 @@ export class TaskRequireService {
         .update(Task)
         .set({
           progress: Math.round(percent * 100) / 100,
-          status: percent === 100 ? 'Wait' : 'Doing',
+          status: percent === 100 ? 'Completed' : 'Doing',
         })
         .where('id = :id', { id: task.id })
         .execute();
